@@ -37,6 +37,20 @@ data_2015 <- arrange(data_2015, campus_name)
 # So basically I want to be able to take the grade level AND ethnicity and put that in one col name(s)
 # Then I want to be able to take the count of each and put that as the col values
 
+### Functions
+combine_grade <- function(df) {
+  df <- df %>% 
+    ddply(c("region", "county_name", "district_name", "campus_name", "campus_number"), 
+          summarise,
+          am_indian = sum(am_indian, na.rm = TRUE),
+          asian = sum(asian, na.rm = TRUE),
+          black = sum(black, na.rm = TRUE),
+          hisp = sum(hisp, na.rm = TRUE),
+          pacif_islan = sum(pacif_islan, na.rm = TRUE),
+          two_or_more = sum(two_or_more, na.rm = TRUE),
+          white = sum(white, na.rm = TRUE))
+}
+
 ######2012
 # Separate by ethnicity
 data_2012 <-data_2012 %>% 
@@ -45,13 +59,27 @@ data_2012 <-data_2012 %>%
 # Rename columns
 data_2012 <- rename_col_2(data_2012)
 
-#### This version combines the ethnicity count + ethnicity
-data_2012_ver_1 <- data_2012
+# Cleans up the data (-9999999 => 0)
+data_2012[data_2012 == -9999999] <- 0
 
-# add year
-data_2012_ver_1$year <- '2012'
+# Combines the grade levels together
+data_2012 <- data_2012 %>% 
+              ddply(c("region", "county_name", "district_name", "campus_number"), 
+               summarise,
+               am_indian = sum(am_indian, na.rm = TRUE),
+               asian = sum(asian, na.rm = TRUE),
+               black = sum(black, na.rm = TRUE),
+               hisp = sum(hisp, na.rm = TRUE),
+               pacif_islan = sum(pacif_islan, na.rm = TRUE),
+               two_or_more = sum(two_or_more, na.rm = TRUE),
+               white = sum(white, na.rm = TRUE))
 
-######2013
+# Add year
+data_2012$year <- '2012'
+# Puts year as the first column
+data_2012 <- data_2012[, c('year', setdiff(names(data_2012), 'year'))]
+
+#####2013
 # Separate by ethnicity
 data_2013 <-data_2013 %>% 
   spread(ethnicity, ethnicity_count)
@@ -59,11 +87,26 @@ data_2013 <-data_2013 %>%
 # Rename columns
 data_2013 <- rename_col_2(data_2013)
 
-#### This version combines the ethnicity count + ethnicity
-data_2013_ver_1 <- data_2013
+# Cleans up the data (-9999999 => 0)
+data_2013[data_2013 == -9999999] <- 0
 
-# add year
-data_2013_ver_1$year <- '2013'
+# Combines the grade levels together
+data_2013 <- data_2013 %>% 
+  ddply(c("region", "county_name", "district_name", "campus_number"), 
+        summarise,
+        am_indian = sum(am_indian, na.rm = TRUE),
+        asian = sum(asian, na.rm = TRUE),
+        black = sum(black, na.rm = TRUE),
+        hisp = sum(hisp, na.rm = TRUE),
+        pacif_islan = sum(pacif_islan, na.rm = TRUE),
+        two_or_more = sum(two_or_more, na.rm = TRUE),
+        white = sum(white, na.rm = TRUE))
+
+# Add year
+data_2013$year <- '2013'
+# Puts year as the first column
+data_2013 <- data_2013[, c('year', setdiff(names(data_2013), 'year'))]
+
 
 ######2014
 # Separate by ethnicity
@@ -73,88 +116,65 @@ data_2014 <-data_2014 %>%
 # Rename columns
 data_2014 <- rename_col_2(data_2014)
 
-#### This version combines the ethnicity count + ethnicity
-data_2014_ver_1 <- data_2014
+# Cleans up the data (-9999999 => 0)
+data_2014[data_2014 == -9999999] <- 0
 
-# add year
-data_2014_ver_1$year <- '2014'
+# Combines the grade levels together
+data_2014 <- data_2014 %>% 
+  ddply(c("region", "county_name", "district_name", "campus_number"), 
+        summarise,
+        am_indian = sum(am_indian, na.rm = TRUE),
+        asian = sum(asian, na.rm = TRUE),
+        black = sum(black, na.rm = TRUE),
+        hisp = sum(hisp, na.rm = TRUE),
+        pacif_islan = sum(pacif_islan, na.rm = TRUE),
+        two_or_more = sum(two_or_more, na.rm = TRUE),
+        white = sum(white, na.rm = TRUE))
+
+# Add year
+data_2014$year <- '2014'
+# Puts year as the first column
+data_2014 <- data_2014[, c('year', setdiff(names(data_2014), 'year'))]
 
 ######2015
 # Separate by ethnicity
 data_2015 <-data_2015 %>% 
-  spread(ethnicity, ethnicity_count, na.rm = TRUE)
+  spread(ethnicity, ethnicity_count)
 
 # Rename columns
 data_2015 <- rename_col_2(data_2015)
 
-#### This version combines the ethnicity count + ethnicity
-data_2015_ver_1 <- data_2015
+# Cleans up the data (-9999999 => 0)
+data_2015[data_2015 == -9999999] <- 0
 
-# add year
-data_2015_ver_1$year <- '2015'
+# Combines the grade levels together
+data_2015 <- data_2015 %>% 
+  ddply(c("region", "county_name", "district_name", "campus_number"), 
+        summarise,
+        am_indian = sum(am_indian, na.rm = TRUE),
+        asian = sum(asian, na.rm = TRUE),
+        black = sum(black, na.rm = TRUE),
+        hisp = sum(hisp, na.rm = TRUE),
+        pacif_islan = sum(pacif_islan, na.rm = TRUE),
+        two_or_more = sum(two_or_more, na.rm = TRUE),
+        white = sum(white, na.rm = TRUE))
+
+# Add year
+data_2015$year <- '2015'
+# Puts year as the first column
+data_2015 <- data_2015[, c('year', setdiff(names(data_2015), 'year'))]
 
 ################################## Combine Datasets ##################################
-tx_enroll <- rbind.fill(data_2012_ver_1, data_2013_ver_1)
-tx_enroll <- rbind.fill(tx_enroll, data_2014_ver_1)
-tx_enroll <- rbind.fill(tx_enroll, data_2015_ver_1)
+tx_enroll <- rbind.fill(data_2012, data_2013)
+tx_enroll <- rbind.fill(tx_enroll, data_2014)
+tx_enroll <- rbind.fill(tx_enroll, data_2015)
 
-######## Check later
-#### do one for each ethnicity and then combine them all together
-#### This version w/ grade level 
-
-### am_indian
-am_indian_12 <- data_2012 %>% 
-                  spread(grade, am_indian)
-am_indian_12 <- rename_col_3('am_indian', am_indian_12)
-am_indian_12[8:13] <- NULL
-
-### asian
-asian_12 <- data_2012 %>% 
-                  spread(grade, asian)
-asian_12 <- rename_col_3('asian', asian_12)
-asian_12[8:13] <- NULL
-
-### black
-black_12 <- data_2012 %>% 
-                  spread(grade, black)
-black_12 <- rename_col_3('black', black_12)
-black_12[8:13] <- NULL
-
-### hisp
-hisp_12 <- data_2012 %>% 
-                  spread(grade, hisp)
-hisp_12 <- rename_col_3('hisp', hisp_12)
-hisp_12[8:13] <- NULL
-
-### pacif_islan
-pacif_islan_12 <- data_2012 %>% 
-                  spread(grade, pacif_islan)
-pacif_islan_12 <- rename_col_3('pacif_islan', pacif_islan_12)
-pacif_islan_12[8:13] <- NULL
-
-### two_or_more
-two_or_more_12 <- data_2012 %>% 
-                  spread(grade, two_or_more)
-two_or_more_12 <- rename_col_3('two_or_more', two_or_more_12)
-two_or_more_12[8:13] <- NULL
-
-### white
-white_12 <- data_2012 %>% 
-                  spread(grade, white)
-white_12 <- rename_col_3('white', white_12)
-white_12[8:13] <- NULL
-
-## combines datasets
-data_2012_ver_2 <- right_join(am_indian_12, asian_12, by = c)
-
-
-
+tx_enroll <- arrange(tx_enroll, campus_number)
 
 ################################## Finish Up ##################################
 
 # Write to .csv files
-
-# tx_enroll_2012_15 <- write.csv(tx_enroll)
+# data/tx_enroll_2012_15 <- write.csv(tx_enroll)
 # data_2012 <- write.csv(data_2012)
 # data_2013 <- write.csv(data_2013)
 # data_2014 <- write.csv(data_2014)
