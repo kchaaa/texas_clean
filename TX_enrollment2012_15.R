@@ -33,9 +33,7 @@ data_2014 <- arrange(data_2014, campus_name)
 data_2015 <- arrange(data_2015, campus_name)
 
 
-################################## Each Year ##################################
-# So basically I want to be able to take the grade level AND ethnicity and put that in one col name(s)
-# Then I want to be able to take the count of each and put that as the col values
+################################## Aggregate ##################################
 
 ### Functions
 combine_grade <- function(df) {
