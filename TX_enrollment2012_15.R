@@ -1,15 +1,17 @@
 ################################## House Keeping ##################################
 
 # Require libraries
+library(plyr)
 library(dplyr)
 library(tidyr)
 library(stringr)
-library(plyr)
 
-# Read in scripts
+# Scripts
+source('scripts/rename.R')
 
+# enroll <- readRDS("NJ_enrollment2010_16.rdata")
 
-# Me: setwd("/Users/phat_000/Documents/CRPE/texas_clean)
+# Me: setwd("C:/Users/phato_000/Documents/CRPE/texas_clean")
 # CRPE: setwd("/Users/crpe/Documents/Clean/texas_clean")
 
 # Read and Rename Datasets
@@ -19,23 +21,6 @@ data_2014 <- read.csv('data/stec14sc.csv', stringsAsFactors=FALSE)
 data_2015 <- read.csv('data/stec15sc.csv', stringsAsFactors=FALSE)
 
 ################################## Setup ##################################
-
-# Function: Rename Column names 
-rename_col <- function(df){
-  colnames(df)[1] <- 'region'
-  colnames(df)[2] <- 'county_name'
-  colnames(df)[3] <- 'district_name'
-  colnames(df)[4] <- 'district_number'
-  colnames(df)[5] <- 'campus_name'
-  colnames(df)[6] <- 'campus_number'
-  colnames(df)[7] <- 'total'
-  colnames(df)[8] <- 'grade'
-  colnames(df)[9] <- 'ethnicity'
-  colnames(df)[10] <-'ethnicity_count'
-  
-  return(df)
-}
-
 data_2012 <- rename_col(data_2012)
 data_2013 <- rename_col(data_2013)
 data_2014 <- rename_col(data_2014)
@@ -48,48 +33,11 @@ data_2014 <- arrange(data_2014, campus_name)
 data_2015 <- arrange(data_2015, campus_name)
 
 
-################################## Change ##################################
-# Pseudo code (kindof)
+################################## Each Year ##################################
 # So basically I want to be able to take the grade level AND ethnicity and put that in one col name(s)
 # Then I want to be able to take the count of each and put that as the col values
 
-# Change col names after separate by ethnicity
-rename_col_2 <- function (df) {
-  colnames(df)[9] <- 'am_indian' 
-  colnames(df)[10] <- 'asian'
-  colnames(df)[11] <- 'black'
-  colnames(df)[12] <- 'hisp'
-  colnames(df)[13] <- 'pacif_islan'
-  colnames(df)[14] <- 'two_or_more'
-  colnames(df)[15] <- 'white'
-  
-  return(df)
-}
-
-rename_col_3 <- function (ethn_name, df) {
-  colnames(df)[14] <- paste(ethn_name, 'early', sep = "_")
-  colnames(df)[15] <- paste(ethn_name, '1', sep = "_")
-  colnames(df)[16] <- paste(ethn_name, '2', sep = "_")
-  colnames(df)[17] <- paste(ethn_name, '3', sep = "_")
-  colnames(df)[18] <- paste(ethn_name, '4', sep = "_")
-  colnames(df)[19] <- paste(ethn_name, '5', sep = "_")
-  colnames(df)[20] <- paste(ethn_name, '6', sep = "_")
-  colnames(df)[21] <- paste(ethn_name, '7', sep = "_")
-  colnames(df)[22] <- paste(ethn_name, '8', sep = "_")
-  colnames(df)[23] <- paste(ethn_name, '9', sep = "_")
-  colnames(df)[24] <- paste(ethn_name, '10', sep = "_")
-  colnames(df)[25] <- paste(ethn_name, '11', sep = "_")
-  colnames(df)[26] <- paste(ethn_name, '12', sep = "_")
-  colnames(df)[27] <- paste(ethn_name, 'prek', sep = "_")
-  colnames(df)[28] <- paste(ethn_name, 'k', sep = "_")
-  
-  return(df)
-}
-
 ######2012
-# Store for checking later
-check_data_2012 <- data_2012
-
 # Separate by ethnicity
 data_2012 <-data_2012 %>% 
   spread(ethnicity, ethnicity_count)
@@ -97,27 +45,117 @@ data_2012 <-data_2012 %>%
 # Rename columns
 data_2012 <- rename_col_2(data_2012)
 
-#DELETE LATER
-check_data_2012_2 <- data_2012
+#### This version combines the ethnicity count + ethnicity
+data_2012_ver_1 <- data_2012
 
-# do one for each ethnicity and then combine them all together
+# add year
+data_2012_ver_1$year <- '2012'
 
-# use summarise or gather fool
+######2013
+# Separate by ethnicity
+data_2013 <-data_2013 %>% 
+  spread(ethnicity, ethnicity_count)
+
+# Rename columns
+data_2013 <- rename_col_2(data_2013)
+
+#### This version combines the ethnicity count + ethnicity
+data_2013_ver_1 <- data_2013
+
+# add year
+data_2013_ver_1$year <- '2013'
+
+######2014
+# Separate by ethnicity
+data_2014 <-data_2014 %>% 
+  spread(ethnicity, ethnicity_count)
+
+# Rename columns
+data_2014 <- rename_col_2(data_2014)
+
+#### This version combines the ethnicity count + ethnicity
+data_2014_ver_1 <- data_2014
+
+# add year
+data_2014_ver_1$year <- '2014'
+
+######2015
+# Separate by ethnicity
+data_2015 <-data_2015 %>% 
+  spread(ethnicity, ethnicity_count, na.rm = TRUE)
+
+# Rename columns
+data_2015 <- rename_col_2(data_2015)
+
+#### This version combines the ethnicity count + ethnicity
+data_2015_ver_1 <- data_2015
+
+# add year
+data_2015_ver_1$year <- '2015'
+
+################################## Combine Datasets ##################################
+tx_enroll <- rbind.fill(data_2012_ver_1, data_2013_ver_1)
+tx_enroll <- rbind.fill(tx_enroll, data_2014_ver_1)
+tx_enroll <- rbind.fill(tx_enroll, data_2015_ver_1)
+
+######## Check later
+#### do one for each ethnicity and then combine them all together
+#### This version w/ grade level 
+
+### am_indian
 am_indian_12 <- data_2012 %>% 
                   spread(grade, am_indian)
-# renames column names
 am_indian_12 <- rename_col_3('am_indian', am_indian_12)
-
-# deletes unnecessary columns
 am_indian_12[8:13] <- NULL
+
+### asian
+asian_12 <- data_2012 %>% 
+                  spread(grade, asian)
+asian_12 <- rename_col_3('asian', asian_12)
+asian_12[8:13] <- NULL
+
+### black
+black_12 <- data_2012 %>% 
+                  spread(grade, black)
+black_12 <- rename_col_3('black', black_12)
+black_12[8:13] <- NULL
+
+### hisp
+hisp_12 <- data_2012 %>% 
+                  spread(grade, hisp)
+hisp_12 <- rename_col_3('hisp', hisp_12)
+hisp_12[8:13] <- NULL
+
+### pacif_islan
+pacif_islan_12 <- data_2012 %>% 
+                  spread(grade, pacif_islan)
+pacif_islan_12 <- rename_col_3('pacif_islan', pacif_islan_12)
+pacif_islan_12[8:13] <- NULL
+
+### two_or_more
+two_or_more_12 <- data_2012 %>% 
+                  spread(grade, two_or_more)
+two_or_more_12 <- rename_col_3('two_or_more', two_or_more_12)
+two_or_more_12[8:13] <- NULL
+
+### white
+white_12 <- data_2012 %>% 
+                  spread(grade, white)
+white_12 <- rename_col_3('white', white_12)
+white_12[8:13] <- NULL
+
+## combines datasets
+data_2012_ver_2 <- right_join(am_indian_12, asian_12, by = c)
+
+
 
 
 ################################## Finish Up ##################################
 
 # Write to .csv files
 
-#combined <- write.csv(data)
-#data_2012 <- write.csv(data_2012)
-#data_2013 <- write.csv(data_2013)
-#data_2014 <- write.csv(data_2014)
-#data_2015 <- write.csv(data_2015)
+# tx_enroll_2012_15 <- write.csv(tx_enroll)
+# data_2012 <- write.csv(data_2012)
+# data_2013 <- write.csv(data_2013)
+# data_2014 <- write.csv(data_2014)
+# data_2015 <- write.csv(data_2015)
