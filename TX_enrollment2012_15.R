@@ -9,11 +9,6 @@ library(stringr)
 # Scripts
 source('scripts/rename.R')
 
-# enroll <- readRDS("NJ_enrollment2010_16.rdata")
-
-# Me: setwd("C:/Users/phato_000/Documents/CRPE/texas_clean")
-# CRPE: setwd("/Users/crpe/Documents/Clean/texas_clean")
-
 # Read and Rename Datasets
 data_2012 <- read.csv('data/stec12sc.csv', stringsAsFactors=FALSE)
 data_2013 <- read.csv('data/stec13sc.csv', stringsAsFactors=FALSE)
@@ -172,8 +167,4 @@ tx_enroll <- arrange(tx_enroll, campus_number)
 ################################## Finish Up ##################################
 
 # Write to .csv files
-# data/tx_enroll_2012_15 <- write.csv(tx_enroll)
-# data_2012 <- write.csv(data_2012)
-# data_2013 <- write.csv(data_2013)
-# data_2014 <- write.csv(data_2014)
-# data_2015 <- write.csv(data_2015)
+write.csv(tx_enroll, file = "data/TX_enroll.csv")
