@@ -7,7 +7,10 @@ library(tidyr)
 library(stringr)
 
 # Scripts
-source('scripts/rename.R')
+# source('scripts/rename.R')
+
+enroll <- readRDS("NJ_enrollment2010_16.rdata")
+enroll <- readRDS("TXPerformance.Rdata")
 
 # Read and Rename Datasets
 data_2012 <- read.csv('data/stec12sc.csv', stringsAsFactors=FALSE)
@@ -27,6 +30,34 @@ data_2013 <- arrange(data_2013, campus_name)
 data_2014 <- arrange(data_2014, campus_name)
 data_2015 <- arrange(data_2015, campus_name)
 
+### Functions from rename.R
+# Function: Rename Column names for SETUP
+rename_col <- function(df){
+  colnames(df)[1] <- 'region'
+  colnames(df)[2] <- 'county_name'
+  colnames(df)[3] <- 'district_name'
+  colnames(df)[4] <- 'district_number'
+  colnames(df)[5] <- 'campus_name'
+  colnames(df)[6] <- 'campus_number'
+  colnames(df)[7] <- 'total'
+  colnames(df)[8] <- 'grade'
+  colnames(df)[9] <- 'ethnicity'
+  colnames(df)[10] <-'ethnicity_count'
+  
+  return(df)
+}
+# Function: Change col names after separate by ethnicity
+rename_col_2 <- function (df) {
+  colnames(df)[9] <- 'am_indian' 
+  colnames(df)[10] <- 'asian'
+  colnames(df)[11] <- 'black'
+  colnames(df)[12] <- 'hisp'
+  colnames(df)[13] <- 'pacif_islan'
+  colnames(df)[14] <- 'two_or_more'
+  colnames(df)[15] <- 'white'
+  
+  return(df)
+}
 
 ################################## Aggregate ##################################
 
@@ -168,3 +199,7 @@ tx_enroll <- arrange(tx_enroll, campus_number)
 
 # Write to .csv files
 write.csv(tx_enroll, file = "data/TX_enroll.csv")
+
+# Save as .RData file
+save.image(file="TXPerformance.Rdata")
+
