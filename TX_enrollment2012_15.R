@@ -6,11 +6,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 
-# Scripts
-# source('scripts/rename.R')
-
-enroll <- readRDS("NJ_enrollment2010_16.rdata")
-enroll <- readRDS("TXPerformance.Rdata")
+#enroll <- readRDS("NJ_enrollment2010_16.rdata")
 
 # Read and Rename Datasets
 data_2012 <- read.csv('data/stec12sc.csv', stringsAsFactors=FALSE)
@@ -19,18 +15,6 @@ data_2014 <- read.csv('data/stec14sc.csv', stringsAsFactors=FALSE)
 data_2015 <- read.csv('data/stec15sc.csv', stringsAsFactors=FALSE)
 
 ################################## Setup ##################################
-data_2012 <- rename_col(data_2012)
-data_2013 <- rename_col(data_2013)
-data_2014 <- rename_col(data_2014)
-data_2015 <- rename_col(data_2015)
-
-# Reorder datasets by region
-data_2012 <- arrange(data_2012, campus_name)
-data_2013 <- arrange(data_2013, campus_name)
-data_2014 <- arrange(data_2014, campus_name)
-data_2015 <- arrange(data_2015, campus_name)
-
-### Functions from rename.R
 # Function: Rename Column names for SETUP
 rename_col <- function(df){
   colnames(df)[1] <- 'region'
@@ -58,6 +42,17 @@ rename_col_2 <- function (df) {
   
   return(df)
 }
+
+data_2012 <- rename_col(data_2012)
+data_2013 <- rename_col(data_2013)
+data_2014 <- rename_col(data_2014)
+data_2015 <- rename_col(data_2015)
+
+# Reorder datasets by region
+data_2012 <- arrange(data_2012, campus_name)
+data_2013 <- arrange(data_2013, campus_name)
+data_2014 <- arrange(data_2014, campus_name)
+data_2015 <- arrange(data_2015, campus_name)
 
 ################################## Aggregate ##################################
 
